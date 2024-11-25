@@ -39,7 +39,7 @@ Dieses Paket wird mit [Poetry](https://python-poetry.org/) verwaltet. Folgen Sie
 1. **Repository klonen:**
 
    ```bash
-   git clone https://github.com/yourusername/laboratorium-ai-asr.git
+   git clone https://github.com/uzl-cosy/cosy-ai-asr.git
    cd laboratorium-ai-asr
    ```
 
