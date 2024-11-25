@@ -1,88 +1,190 @@
 # Laboratorium AI ASR
 
-Dieses Repository enthält das Projekt Laboratorium AI ASR, ein Python-basiertes Projekt, das für automatische Spracherkennung (ASR) entwickelt wurde.
+![Python](https://img.shields.io/badge/Python-3.10.13-blue.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+![Poetry](https://img.shields.io/badge/Build-Poetry-blue.svg)
 
-## Voraussetzungen
+**Laboratorium AI ASR** ist ein Python-Paket zur automatischen Spracherkennung (ASR). Es ermöglicht die präzise Transkription von .wav-Audiodateien und speichert die Ergebnisse in .json-Dateien. Das Paket nutzt [WhisperX](https://github.com/m-bain/whisperX) mit dem "medium" Whisper-Modell von OpenAI für hochwertige Ergebnisse.
 
-Bevor du mit der Entwicklung beginnst, stelle sicher, dass `pyenv` und `pyenv-virtualenv` auf deinem System installiert sind.
+## Inhaltsverzeichnis
 
-### Installation von pyenv und pyenv-virtualenv
+- [Laboratorium AI ASR](#laboratorium-ai-asr)
+  - [Inhaltsverzeichnis](#inhaltsverzeichnis)
+  - [Überblick](#überblick)
+    - [Hauptmerkmale](#hauptmerkmale)
+  - [Installation und Build](#installation-und-build)
+  - [Nutzung](#nutzung)
+    - [CLI-Verwendung mit Filedescriptoren](#cli-verwendung-mit-filedescriptoren)
+      - [1. Modul starten und Modell laden](#1-modul-starten-und-modell-laden)
+      - [2. Warten auf das "ready" Signal](#2-warten-auf-das-ready-signal)
+      - [3. Dateien verarbeiten](#3-dateien-verarbeiten)
+    - [Beispiel mit Shell-Skript](#beispiel-mit-shell-skript)
+  - [Lizenz](#lizenz)
 
-#### Für macOS:
+## Überblick
 
-1. Installiere pyenv mit Homebrew:
+**Laboratorium AI ASR** bietet eine einfache Möglichkeit, Audioaufnahmen automatisch zu transkribieren. Es unterstützt verschiedene Whisper-Modelle und ermöglicht die Nutzung von CPU oder GPU zur Optimierung der Transkriptionsgeschwindigkeit und -genauigkeit.
 
-   `brew update
-brew install pyenv`
+### Hauptmerkmale
 
-2. Füge pyenv zur `PATH`-Variable hinzu, indem du folgende Zeile in deine `.zshrc` oder `.bash_profile` einfügst:
+- **Automatische Spracherkennung (ASR):** Transkription von .wav-Dateien.
+- **Modellvielfalt:** Unterstützung mehrerer Whisper-Modelle (tiny, base, small, medium, large-v1, large-v2, large-v3).
+- **Hardware-Beschleunigung:** Nutzung von CPU oder GPU.
+- **Flexible Konfiguration:** Anpassung von Gerät (DEVICE) und Berechnungstyp (COMPUTE_TYPE).
 
-   `export PATH="$(pyenv root)/shims:$PATH"`
+## Installation und Build
 
-3. Installiere pyenv-virtualenv:
+Dieses Paket wird mit [Poetry](https://python-poetry.org/) verwaltet. Folgen Sie diesen Schritten, um das Paket zu installieren und zu bauen:
 
-   `brew install pyenv-virtualenv`
+1. **Repository klonen:**
 
-4. Füge die Initialisierung von pyenv-virtualenv zu deiner Shell hinzu, indem du folgende Zeile in deine `.zshrc` oder `.bash_profile` einfügst:
+   ```bash
+   git clone https://github.com/yourusername/laboratorium-ai-asr.git
+   cd laboratorium-ai-asr
+   ```
 
-   `eval "$(pyenv virtualenv-init -)"`
+2. **Abhängigkeiten installieren:**
 
-#### Für Linux:
+   ```bash
+   poetry install
+   ```
 
-1. Installiere pyenv:
+3. **Virtuelle Umgebung aktivieren:**
 
-   `curl https://pyenv.run | bash`
+   ```bash
+   poetry shell
+   ```
 
-2. Füge pyenv zur `PATH`-Variable hinzu, indem du folgende Zeilen in deine `.bashrc` oder `.zshrc` einfügst:
+4. **Paket bauen:**
 
-   `export PATH="$HOME/.pyenv/bin:$PATH"
-eval "$(pyenv init --path)"`
+   ```bash
+   poetry build
+   ```
 
-3. Installiere pyenv-virtualenv, indem du es als Plugin hinzufügst:
+   Dieses Kommando erstellt die distributierbaren Dateien im dist/-Verzeichnis.
 
-   `git clone https://github.com/pyenv/pyenv-virtualenv.git $(pyenv root)/plugins/pyenv-virtualenv
-echo 'eval "$(pyenv virtualenv-init -)"' >> ~/.bashrc`
+## Nutzung
 
-## Einrichtung der Entwicklungsumgebung
+Das Paket wird über die Kommandozeile (CLI) als dauerhaft laufendes Modul ausgeführt. Es ermöglicht die Transkription von .wav-Dateien und die Ausgabe in .json-Dateien mittels Filedescriptoren. Die Kommunikation erfolgt über eine Pipe, wobei das Modul "ready" sendet, sobald das Modell geladen ist und bereit zur Verarbeitung ist.
 
-1. Klone das Repository und wechsle in das Projektverzeichnis:
+### CLI-Verwendung mit Filedescriptoren
 
-   `git clone [URL-TO-REPOSITORY]
-cd [REPOSITORY-NAME]`
+#### 1. Modul starten und Modell laden
 
-2. Richte das virtuelle Environment mit dem bereitgestellten Skript ein:
+Starten Sie das ASR-Modul über die CLI. Das Modul lädt das Modell und signalisiert über den Filedescriptor, dass es bereit ist.
 
-   `./venv-setup.sh`
+```bash
+python -m laboratorium_ai_asr -f <FD>
+```
 
-3. Aktiviere das virtuelle Environment:
+**Parameter:**
 
-   - Über das Terminal:
+- `-f, --fd`: Filedescriptor für die Pipe-Kommunikation.
 
-     `pyenv activate laboratorium_ai_asr_env`
+**Beispiel:**
 
-   - In VSCode:
+```bash
+python -m laboratorium_ai_asr -f 3
+```
 
-     Wähle das `laboratorium_ai_asr_env` als Python-Interpreter aus.
+#### 2. Warten auf das "ready" Signal
 
-## Entwicklung
+Nachdem das Modul gestartet wurde, lädt es das ASR-Modell. Sobald das Modell geladen ist, sendet das Modul das Signal "ready" über den angegebenen Filedescriptor.
 
-- Die Hauptdatei des Projekts befindet sich im Package `laboratorium_ai_asr`.
-- Zugehörige Tests findest du im Verzeichnis `tests`.
+#### 3. Dateien verarbeiten
 
-## Tests ausführen
+Übergeben Sie die Pfade zur Eingabe- (.wav) und Ausgabe- (.json) Datei über die Pipe. Das Modul verarbeitet die Datei und sendet ein "done" Signal, sobald die Transkription abgeschlossen ist.
 
-Um die Tests auszuführen, stelle sicher, dass das virtuelle Environment aktiviert ist und führe im Terminal:
+**Beispiel:**
 
-`pytest`
+```bash
+echo "path/to/input.wav,path/to/output.json" >&3
+```
 
-## Abhängigkeiten speichern
+**Beschreibung:**
 
-Wenn neue Pakete installiert wurden, führe vor dem Commit das Skript `venv-save-dependencies.sh` aus, um die neuen Pakete aus dem virtuellen Environment in die `requirements.txt` zu extrahieren:
+- Das echo-Kommando sendet die Pfade zur Eingabe- und Ausgabedatei über den Filedescriptor 3.
+- Das Modul empfängt die Pfade, transkribiert die .wav-Datei und speichert das Ergebnis in der .json-Datei.
+- Nach Abschluss sendet das Modul ein "done" Signal über den Filedescriptor.
 
-`./venv-save-dependencies.sh`
+**Vollständiger Ablauf:**
 
-## Continuous Integration (CI)
+1. **Starten Sie das ASR-Modul:**
 
-Nachdem der Code ins Repository gepusht wurde, führt die CI automatisch die Tests durch. Bitte überprüfe, ob diese erfolgreich waren und bessere gegebenenfalls nach.
+   ```bash
+   python -m laboratorium_ai_asr -f 3
+   ```
 
-## Viel Erfolg bei der Entwicklung!
+2. **Senden Sie die Dateiwege zur Transkription:**
+
+   ```bash
+   echo "path/to/input.wav,path/to/output.json" >&3
+   ```
+
+3. **Wiederholen Sie Schritt 2 für weitere Dateien:**
+
+   ```bash
+   echo "path/to/another_input.wav,path/to/another_output.json" >&3
+   ```
+
+4. **Beenden des Moduls:**
+
+   Senden Sie "exit,exit" über den Filedescriptor, um das Modul zu stoppen.
+
+   ```bash
+   echo "exit,exit" >&3
+   ```
+
+### Beispiel mit Shell-Skript
+
+Hier ist ein Beispiel, wie Sie das ASR-Paket in einem Shell-Skript nutzen können:
+
+```bash
+#!/bin/bash
+
+# Öffnen Sie einen Dateideskriptor (z.B. 3) für die Pipe-Kommunikation
+exec 3<>/dev/null
+
+# Starten Sie das ASR-Modul im Hintergrund und verbinden Sie den Filedescriptor
+python -m laboratorium_ai_asr -f 3 &
+
+# PID des ASR-Moduls speichern, um es später beenden zu können
+ASR_PID=$!
+
+# Warten Sie auf das "ready" Signal
+read -u 3 signal
+if [ "$signal" = "ready" ]; then
+    echo "Modell ist bereit zur Verarbeitung."
+
+    # Senden Sie die Eingabe- und Ausgabepfade
+    echo "path/to/input.wav,path/to/output.json" >&3
+
+    # Warten Sie auf das "done" Signal
+    read -u 3 signal_done
+    if [ "$signal_done" = "done" ]; then
+        echo "Transkription abgeschlossen."
+    fi
+
+    # Weitere Transkriptionen können hier hinzugefügt werden
+    echo "path/to/another_input.wav,path/to/another_output.json" >&3
+
+    # Warten Sie erneut auf das "done" Signal
+    read -u 3 signal_done
+    if [ "$signal_done" = "done" ]; then
+        echo "Weitere Transkription abgeschlossen."
+    fi
+
+    # Beenden Sie das ASR-Modul
+    echo "exit,exit" >&3
+
+    # Warten Sie, bis das ASR-Modul beendet ist
+    wait $ASR_PID
+fi
+
+# Schließen Sie den Filedeskriptor
+exec 3>&-
+```
+
+## Lizenz
+
+Dieses Projekt ist unter der MIT-Lizenz lizenziert. Weitere Details finden Sie in der [LICENSE](LICENSE)-Datei.
