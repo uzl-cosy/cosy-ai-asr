@@ -40,7 +40,7 @@ This package is managed with [Poetry](https://python-poetry.org/). Follow these 
 
    ```bash
    git clone https://github.com/uzl-cosy/cosy-ai-asr.git
-   cd laboratorium-ai-asr
+   cd cosy-ai-asr
    ```
 
 2. **Install Dependencies:**
