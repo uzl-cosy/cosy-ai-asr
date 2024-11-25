@@ -4,187 +4,179 @@
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 ![Poetry](https://img.shields.io/badge/Build-Poetry-blue.svg)
 
-**Laboratorium AI ASR** ist ein Python-Paket zur automatischen Spracherkennung (ASR). Es ermöglicht die präzise Transkription von .wav-Audiodateien und speichert die Ergebnisse in .json-Dateien. Das Paket nutzt [WhisperX](https://github.com/m-bain/whisperX) mit dem "medium" Whisper-Modell von OpenAI für hochwertige Ergebnisse.
+**Laboratorium AI ASR** is a Python package for automatic speech recognition (ASR). It enables precise transcription of .wav audio files and saves the results in .json files. The package uses [WhisperX](https://github.com/m-bain/whisperX) with OpenAI's "medium" Whisper model for high-quality results.
 
-## Inhaltsverzeichnis
+## Table of Contents
 
 - [Laboratorium AI ASR](#laboratorium-ai-asr)
-  - [Inhaltsverzeichnis](#inhaltsverzeichnis)
-  - [Überblick](#überblick)
-    - [Hauptmerkmale](#hauptmerkmale)
-  - [Installation und Build](#installation-und-build)
-  - [Nutzung](#nutzung)
-    - [CLI-Verwendung mit Filedescriptoren](#cli-verwendung-mit-filedescriptoren)
-      - [1. Modul starten und Modell laden](#1-modul-starten-und-modell-laden)
-      - [2. Warten auf das "ready" Signal](#2-warten-auf-das-ready-signal)
-      - [3. Dateien verarbeiten](#3-dateien-verarbeiten)
-    - [Beispiel mit Shell-Skript](#beispiel-mit-shell-skript)
-  - [Lizenz](#lizenz)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+    - [Key Features](#key-features)
+  - [Installation and Build](#installation-and-build)
+  - [Usage](#usage)
+    - [CLI Usage with File Descriptors](#cli-usage-with-file-descriptors)
+      - [1. Start Module and Load Model](#1-start-module-and-load-model)
+      - [2. Wait for "ready" Signal](#2-wait-for-ready-signal)
+      - [3. Process Files](#3-process-files)
+    - [Example Shell Script](#example-shell-script)
+  - [License](#license)
 
-## Überblick
+## Overview
 
-**Laboratorium AI ASR** bietet eine einfache Möglichkeit, Audioaufnahmen automatisch zu transkribieren. Es unterstützt verschiedene Whisper-Modelle und ermöglicht die Nutzung von CPU oder GPU zur Optimierung der Transkriptionsgeschwindigkeit und -genauigkeit.
+**Laboratorium AI ASR** provides a simple way to automatically transcribe audio recordings. It supports various Whisper models and enables the use of CPU or GPU to optimize transcription speed and accuracy.
 
-### Hauptmerkmale
+### Key Features
 
-- **Automatische Spracherkennung (ASR):** Transkription von .wav-Dateien.
-- **Modellvielfalt:** Unterstützung mehrerer Whisper-Modelle (tiny, base, small, medium, large-v1, large-v2, large-v3).
-- **Hardware-Beschleunigung:** Nutzung von CPU oder GPU.
-- **Flexible Konfiguration:** Anpassung von Gerät (DEVICE) und Berechnungstyp (COMPUTE_TYPE).
+- **Automatic Speech Recognition (ASR):** Transcription of .wav files.
+- **Model Variety:** Support for multiple Whisper models (tiny, base, small, medium, large-v1, large-v2, large-v3).
+- **Hardware Acceleration:** CPU or GPU utilization.
+- **Flexible Configuration:** Customization of device (DEVICE) and computation type (COMPUTE_TYPE).
 
-## Installation und Build
+## Installation and Build
 
-Dieses Paket wird mit [Poetry](https://python-poetry.org/) verwaltet. Folgen Sie diesen Schritten, um das Paket zu installieren und zu bauen:
+This package is managed with [Poetry](https://python-poetry.org/). Follow these steps to install and build the package:
 
-1. **Repository klonen:**
+1. **Clone Repository:**
 
    ```bash
    git clone https://github.com/uzl-cosy/cosy-ai-asr.git
    cd laboratorium-ai-asr
    ```
 
-2. **Abhängigkeiten installieren:**
+2. **Install Dependencies:**
 
    ```bash
    poetry install
    ```
 
-3. **Virtuelle Umgebung aktivieren:**
+3. **Activate Virtual Environment:**
 
    ```bash
    poetry shell
    ```
 
-4. **Paket bauen:**
+4. **Build Package:**
 
    ```bash
    poetry build
    ```
 
-   Dieses Kommando erstellt die distributierbaren Dateien im dist/-Verzeichnis.
+   This command creates the distributable files in the dist/ directory.
 
-## Nutzung
+## Usage
 
-Das Paket wird über die Kommandozeile (CLI) als dauerhaft laufendes Modul ausgeführt. Es ermöglicht die Transkription von .wav-Dateien und die Ausgabe in .json-Dateien mittels Filedescriptoren. Die Kommunikation erfolgt über eine Pipe, wobei das Modul "ready" sendet, sobald das Modell geladen ist und bereit zur Verarbeitung ist.
+The package runs as a persistent module through the command line interface (CLI). It enables transcription of .wav files and output to .json files using file descriptors. Communication occurs through a pipe, where the module sends "ready" once the model is loaded and ready for processing.
 
-### CLI-Verwendung mit Filedescriptoren
+### CLI Usage with File Descriptors
 
-#### 1. Modul starten und Modell laden
+#### 1. Start Module and Load Model
 
-Starten Sie das ASR-Modul über die CLI. Das Modul lädt das Modell und signalisiert über den Filedescriptor, dass es bereit ist.
+Start the ASR module via CLI. The module loads the model and signals through the file descriptor when it's ready.
 
 ```bash
 python -m laboratorium_ai_asr -f <FD>
 ```
 
-**Parameter:**
+**Parameters:**
 
-- `-f, --fd`: Filedescriptor für die Pipe-Kommunikation.
+- `-f, --fd`: File descriptor for pipe communication.
 
-**Beispiel:**
+**Example:**
 
 ```bash
 python -m laboratorium_ai_asr -f 3
 ```
 
-#### 2. Warten auf das "ready" Signal
+#### 2. Wait for "ready" Signal
 
-Nachdem das Modul gestartet wurde, lädt es das ASR-Modell. Sobald das Modell geladen ist, sendet das Modul das Signal "ready" über den angegebenen Filedescriptor.
+After starting the module, it loads the ASR model. Once loaded, the module sends a "ready" signal through the specified file descriptor.
 
-#### 3. Dateien verarbeiten
+#### 3. Process Files
 
-Übergeben Sie die Pfade zur Eingabe- (.wav) und Ausgabe- (.json) Datei über die Pipe. Das Modul verarbeitet die Datei und sendet ein "done" Signal, sobald die Transkription abgeschlossen ist.
+Pass the input (.wav) and output (.json) file paths through the pipe. The module processes the file and sends a "done" signal once transcription is complete.
 
-**Beispiel:**
+**Example:**
 
 ```bash
 echo "path/to/input.wav,path/to/output.json" >&3
 ```
 
-**Beschreibung:**
+**Description:**
 
-- Das echo-Kommando sendet die Pfade zur Eingabe- und Ausgabedatei über den Filedescriptor 3.
-- Das Modul empfängt die Pfade, transkribiert die .wav-Datei und speichert das Ergebnis in der .json-Datei.
-- Nach Abschluss sendet das Modul ein "done" Signal über den Filedescriptor.
+- The echo command sends input and output file paths through file descriptor 3.
+- The module receives the paths, transcribes the .wav file, and saves the result in the .json file.
+- Upon completion, the module sends a "done" signal through the file descriptor.
 
-**Vollständiger Ablauf:**
+**Complete Flow:**
 
-1. **Starten Sie das ASR-Modul:**
+1. **Start the ASR Module:**
 
    ```bash
    python -m laboratorium_ai_asr -f 3
    ```
 
-2. **Senden Sie die Dateiwege zur Transkription:**
+2. **Send File Paths for Transcription:**
 
    ```bash
    echo "path/to/input.wav,path/to/output.json" >&3
    ```
 
-3. **Wiederholen Sie Schritt 2 für weitere Dateien:**
+3. **Repeat Step 2 for Additional Files:**
 
    ```bash
    echo "path/to/another_input.wav,path/to/another_output.json" >&3
    ```
 
-4. **Beenden des Moduls:**
+### Example Shell Script
 
-   Senden Sie "exit,exit" über den Filedescriptor, um das Modul zu stoppen.
-
-   ```bash
-   echo "exit,exit" >&3
-   ```
-
-### Beispiel mit Shell-Skript
-
-Hier ist ein Beispiel, wie Sie das ASR-Paket in einem Shell-Skript nutzen können:
+Here's an example of using the ASR package in a shell script:
 
 ```bash
 #!/bin/bash
 
-# Öffnen Sie einen Dateideskriptor (z.B. 3) für die Pipe-Kommunikation
+# Open a file descriptor (e.g., 3) for pipe communication
 exec 3<>/dev/null
 
-# Starten Sie das ASR-Modul im Hintergrund und verbinden Sie den Filedescriptor
+# Start the ASR module in background and connect the file descriptor
 python -m laboratorium_ai_asr -f 3 &
 
-# PID des ASR-Moduls speichern, um es später beenden zu können
+# Store ASR module's PID for later termination
 ASR_PID=$!
 
-# Warten Sie auf das "ready" Signal
+# Wait for "ready" signal
 read -u 3 signal
 if [ "$signal" = "ready" ]; then
-    echo "Modell ist bereit zur Verarbeitung."
+      echo "Model is ready for processing."
 
-    # Senden Sie die Eingabe- und Ausgabepfade
-    echo "path/to/input.wav,path/to/output.json" >&3
+      # Send input and output paths
+      echo "path/to/input.wav,path/to/output.json" >&3
 
-    # Warten Sie auf das "done" Signal
-    read -u 3 signal_done
-    if [ "$signal_done" = "done" ]; then
-        echo "Transkription abgeschlossen."
-    fi
+      # Wait for "done" signal
+      read -u 3 signal_done
+      if [ "$signal_done" = "done" ]; then
+            echo "Transcription complete."
+      fi
 
-    # Weitere Transkriptionen können hier hinzugefügt werden
-    echo "path/to/another_input.wav,path/to/another_output.json" >&3
+      # Additional transcriptions can be added here
+      echo "path/to/another_input.wav,path/to/another_output.json" >&3
 
-    # Warten Sie erneut auf das "done" Signal
-    read -u 3 signal_done
-    if [ "$signal_done" = "done" ]; then
-        echo "Weitere Transkription abgeschlossen."
-    fi
+      # Wait for "done" signal again
+      read -u 3 signal_done
+      if [ "$signal_done" = "done" ]; then
+            echo "Additional transcription complete."
+      fi
 
-    # Beenden Sie das ASR-Modul
-    echo "exit,exit" >&3
+      # Terminate the ASR module
+      echo "exit,exit" >&3
 
-    # Warten Sie, bis das ASR-Modul beendet ist
-    wait $ASR_PID
+      # Wait for ASR module to terminate
+      wait $ASR_PID
 fi
 
-# Schließen Sie den Filedeskriptor
+# Close the file descriptor
 exec 3>&-
 ```
 
-## Lizenz
+## License
 
-Dieses Projekt ist unter der MIT-Lizenz lizenziert. Weitere Details finden Sie in der [LICENSE](LICENSE)-Datei.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
